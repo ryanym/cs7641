@@ -50,3 +50,4 @@ def get_data(hist=False):
 
 if __name__ == '__main__':
     get_data()
+

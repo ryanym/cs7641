@@ -6,6 +6,21 @@ import itertools
 
 plt.style.use('seaborn-whitegrid')
 
+def plot_tune_curve(f1_train, f1_test, xvals, title=None, xlabel=None):
+    plt.plot(xvals, f1_test, 'o-', color='g', label='Test F1 Score')
+    plt.plot(xvals, f1_train, 'o-', color='b', label='Train F1 Score')
+
+    plt.ylabel('Model F1 Score')
+    # plt.xlabel('No. Neighbors')
+    plt.xlabel(xlabel)
+    plt.title(title)
+
+    plt.legend(loc='best')
+    plt.tight_layout()
+    plt.show()
+
+
+
 def plot_learning_curve(clf, X, y, title="Insert Title"): # TODO refactor this out to experiment
     n = len(y)
     train_mean = [];

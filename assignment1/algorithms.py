@@ -11,7 +11,7 @@ from sklearn.svm import SVC
 
 
 
-def tuneKNN(X_train, y_train, X_test, y_test, neighbors_list):
+def tune_KNN(X_train, y_train, X_test, y_test, neighbors_list):
     f1_test = []
     f1_train = []
     # klist = np.linspace(1,250,25).astype('int')
@@ -42,8 +42,10 @@ def tuneKNN(X_train, y_train, X_test, y_test, neighbors_list):
     # plt.tight_layout()
     # plt.show()
 
+# TODO get best parameters for KNN
 
-def tuneDecisionTree(X_train, y_train, X_test, y_test, depth_list):
+
+def tune_decision_tree(X_train, y_train, X_test, y_test, depth_list):
     f1_test = []
     f1_train = []
     # max_depth = list(range(1, 31))
@@ -65,7 +67,7 @@ def tuneDecisionTree(X_train, y_train, X_test, y_test, depth_list):
     # plt.tight_layout()
     # plt.show()
 
-def decisitionTreeGridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
+def decisition_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     #parameters to search:
     #20 values of min_samples leaf from 0.5% sample to 5% of the training data
     #20 values of max_depth from 1, 20
@@ -79,7 +81,7 @@ def decisitionTreeGridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     # return tree.best_params_['max_depth'], tree.best_params_['min_samples_leaf']
     return dt.best_params_
 
-def tuneBoostedTree(X_train, y_train, X_test, y_test, max_depth, min_samples_leaf, title, estimator_list):
+def tune_boosted_tree(X_train, y_train, X_test, y_test, max_depth, min_samples_leaf, title, estimator_list):
     f1_test = []
     f1_train = []
     # n_estimators = np.linspace(1, 250, 40).astype('int')
@@ -101,7 +103,7 @@ def tuneBoostedTree(X_train, y_train, X_test, y_test, max_depth, min_samples_lea
     # plt.legend(loc='best')
     # plt.tight_layout()
     # plt.show()
-def boostedTreeGridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
+def boosted_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     #parameters to search:
     #n_estimators, learning_rate, max_depth, min_samples_leaf
     param_grid = {'min_samples_leaf': np.linspace(start_leaf_n,end_leaf_n,3).round().astype('int'),
@@ -117,7 +119,7 @@ def boostedTreeGridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     return boostedTree
 
 
-def tuneNN(X_train, y_train, X_test, y_test, hidden_layer_sizes):
+def tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes):
     f1_test = []
     f1_train = []
     # hlist = np.linspace(1, 150, 30).astype('int')
@@ -141,7 +143,7 @@ def tuneNN(X_train, y_train, X_test, y_test, hidden_layer_sizes):
     # plt.tight_layout()
     # plt.show()
 
-def nnGridSearchCV(X_train, y_train):
+def nn_GridSearchCV(X_train, y_train):
     #parameters to search:
     #number of hidden units
     #learning_rate
@@ -158,7 +160,7 @@ def nnGridSearchCV(X_train, y_train):
     return nn.best_params_
 
 
-def tuneSVM(X_train, y_train, X_test, y_test, kernel_functions):
+def tune_svm(X_train, y_train, X_test, y_test, kernel_functions):
     f1_test = []
     f1_train = []
     kernel_func = ['linear', 'poly', 'rbf', 'sigmoid']
@@ -193,7 +195,7 @@ def tuneSVM(X_train, y_train, X_test, y_test, kernel_functions):
 
     return f1_test, f1_train
 
-def svmGridSearchCV(X_train, y_train):
+def svm_GridSearchCV(X_train, y_train):
     #parameters to search:
     #penalty parameter, C
     #
