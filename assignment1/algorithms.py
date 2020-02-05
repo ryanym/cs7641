@@ -159,13 +159,13 @@ def tune_svm(X_train, y_train, X_test, y_test, kernel_functions):
     kernel_func = ['linear', 'poly', 'rbf', 'sigmoid']
     for i in kernel_functions:
         if 'poly' in i:
-                j = int(i.split('poly')[1])
-                clf = SVC(kernel=i, degree=j, random_state=0)
-                clf.fit(X_train, y_train)
-                y_pred_test = clf.predict(X_test)
-                y_pred_train = clf.predict(X_train)
-                f1_test.append(f1_score(y_test, y_pred_test))
-                f1_train.append(f1_score(y_train, y_pred_train))
+            j = int(i.split('poly')[1])
+            clf = SVC(kernel='poly', degree=j, random_state=0)
+            clf.fit(X_train, y_train)
+            y_pred_test = clf.predict(X_test)
+            y_pred_train = clf.predict(X_train)
+            f1_test.append(f1_score(y_test, y_pred_test))
+            f1_train.append(f1_score(y_train, y_pred_train))
         else:
             clf = SVC(kernel=i, random_state=0)
             clf.fit(X_train, y_train)
@@ -186,7 +186,7 @@ def tune_svm(X_train, y_train, X_test, y_test, kernel_functions):
     # plt.tight_layout()
     # plt.show()
 
-    return f1_test, f1_train
+    return f1_train, f1_test
 
 def svm_GridSearchCV(X_train, y_train):
     #parameters to search:
@@ -204,4 +204,4 @@ def svm_GridSearchCV(X_train, y_train):
     print("Per Hyperparameter tuning, best parameters are:")
     print(svm.best_params_)
     # return clf.best_params_['C'], clf.best_params_['gamma']
-    return svm.best_params_
+    return svm

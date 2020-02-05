@@ -94,10 +94,30 @@ def run_decision_tree_exp(X_train, y_train, X_test, y_test, dataset_name):
     cm = confusion_matrix(y_test, y_pred)
     plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
 
+
+def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
+    algor_name = 'SVM'
+    kernels = ['linear', 'poly2', 'poly3', 'poly4', 'poly5', 'poly6', 'poly7', 'poly8', 'rbf', 'sigmoid']
+    f1_train, f1_test = tune_svm(X_train, y_train, X_test, y_test, kernels)
+    plot_tune_curve(f1_train, f1_test, kernels, algor_name=algor_name, xlabel='Kernel Function', dataset_name=dataset_name)
+    clf = svm_GridSearchCV(X_train, y_train)
+    estimator = clf.best_estimator_
+    train_sizes = (np.linspace(.05, 1.0, 20) * y_train.shape[0]).astype('int')
+    train_mean, train_std, test_mean, test_std, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std = \
+        run_cross_validation(clf, X_train, y_train, train_sizes, algor_name=algor_name, dataset_name=dataset_name)
+    plot_learning_curve(train_sizes, train_mean, train_std, test_mean, test_std,
+                        algor_name=algor_name, dataset_name=dataset_name)
+    plot_learning_prediction_times(train_sizes, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std,
+                                   algor_name=algor_name, dataset_name=dataset_name)
+    y_pred = classifier_eval(estimator, X_train, y_train, X_test, y_test)
+    cm = confusion_matrix(y_test, y_pred)
+    plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
+
 def run_experiments():
     X1, y1, X2, y2 = get_data()
     X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
-    run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    # run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
 
 
 if __name__ == '__main__':
