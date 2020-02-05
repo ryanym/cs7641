@@ -11,12 +11,13 @@ from sklearn.svm import SVC
 
 
 
-def tune_KNN(X_train, y_train, X_test, y_test, neighbors_list):
+def tune_knn(X_train, y_train, X_test, y_test, neighbors_list):
     f1_test = []
     f1_train = []
     # klist = np.linspace(1,250,25).astype('int')
     # klist = np.linspace(1, 50, 50).astype('int')
     for i in neighbors_list:
+        print('kNN: {0}/{1}'.format(i, max(neighbors_list)))
         clf = kNN(n_neighbors=i,
                   n_jobs=-1,
                   algorithm='auto',
@@ -33,14 +34,25 @@ def tune_KNN(X_train, y_train, X_test, y_test, neighbors_list):
     return f1_test, f1_train
 
 
-# TODO get best parameters for KNN
+def knn_GridSearchCV(X_train, y_train):
+    neighbors_list = np.arange(1, 30)
+    weights = ['uniform', 'distance']
+    param_grid = {'n_neighbors': neighbors_list,
+                  'weights': weights}
 
+    knn = GridSearchCV(estimator=kNN(n_jobs=-1, random_state=0), param_grid=param_grid, cv=10)
+    knn.fit(X_train, y_train)
+    print("Per Hyperparameter tuning, best parameters are:")
+    print(knn.best_params_)
+    # return tree.best_params_['max_depth'], tree.best_params_['min_samples_leaf']
+    return knn
 
 def tune_decision_tree(X_train, y_train, X_test, y_test, depth_list):
     f1_test = []
     f1_train = []
     # max_depth = list(range(1, 31))
     for i in depth_list:
+        print('DT: {0}/{1}'.format(i, max(depth_list)))
         clf = DecisionTreeClassifier(max_depth=i, min_samples_leaf=1, criterion='entropy', random_state=0)
         clf.fit(X_train, y_train)
         y_pred_test = clf.predict(X_test)
@@ -58,6 +70,7 @@ def tune_decision_tree(X_train, y_train, X_test, y_test, depth_list):
     # plt.tight_layout()
     # plt.show()
 
+
 def decisition_tree_GridSearchCV(X_train, y_train):
     #parameters to search:
     #20 values of min_samples leaf from 0.5% sample to 5% of the training data
@@ -67,18 +80,21 @@ def decisition_tree_GridSearchCV(X_train, y_train):
     param_grid = {'min_samples_leaf': np.linspace(start_leaf_n, end_leaf_n, 20).round().astype('int'),
                   'max_depth': np.arange(1, 20)}
 
-    dt = GridSearchCV(estimator = DecisionTreeClassifier(), param_grid=param_grid, cv=10)
+    dt = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0), param_grid=param_grid, cv=10)
     dt.fit(X_train, y_train)
     print("Per Hyperparameter tuning, best parameters are:")
     print(dt.best_params_)
     # return tree.best_params_['max_depth'], tree.best_params_['min_samples_leaf']
     return dt
 
-def tune_boosted_tree(X_train, y_train, X_test, y_test, max_depth, min_samples_leaf, title, estimator_list):
+def tune_boosted_tree(X_train, y_train, X_test, y_test,  estimator_list):
     f1_test = []
     f1_train = []
     # n_estimators = np.linspace(1, 250, 40).astype('int')
+    max_depth = 5
+    min_samples_leaf = 30
     for i in estimator_list:
+        print('DT: {0}/{1}'.format(i, max(estimator_list)))
         clf = GradientBoostingClassifier(n_estimators=i, max_depth=int(max_depth / 2),
                                          min_samples_leaf=int(min_samples_leaf / 2), random_state=0, )
         clf.fit(X_train, y_train)
@@ -117,6 +133,7 @@ def tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes):
     f1_train = []
     # hlist = np.linspace(1, 150, 30).astype('int')
     for i in hidden_layer_sizes:
+        print('NN: {0}/{1}'.format(i, max(hidden_layer_sizes)))
         clf = MLPClassifier(hidden_layer_sizes=(i,), solver='adam', activation='logistic',
                             learning_rate_init=0.05, random_state=0)
         clf.fit(X_train, y_train)
@@ -158,6 +175,7 @@ def tune_svm(X_train, y_train, X_test, y_test, kernel_functions):
     f1_train = []
     kernel_func = ['linear', 'poly', 'rbf', 'sigmoid']
     for i in kernel_functions:
+        print('SVM: {0}'.format(i))
         if 'poly' in i:
             j = int(i.split('poly')[1])
             clf = SVC(kernel='poly', degree=j, random_state=0)

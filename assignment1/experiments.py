@@ -81,18 +81,7 @@ def run_decision_tree_exp(X_train, y_train, X_test, y_test, dataset_name):
     clf = decisition_tree_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
 
-    train_sizes = (np.linspace(.05, 1.0, 20) * y_train.shape[0]).astype('int')
-    train_mean, train_std, test_mean, test_std, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std = \
-        run_cross_validation(clf, X_train, y_train, train_sizes, algor_name=algor_name, dataset_name=dataset_name)
-
-    plot_learning_curve(train_sizes, train_mean, train_std, test_mean, test_std,
-                        algor_name=algor_name, dataset_name=dataset_name)
-    plot_learning_prediction_times(train_sizes, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std,
-                                   algor_name=algor_name, dataset_name=dataset_name)
-
-    y_pred = classifier_eval(estimator, X_train, y_train, X_test, y_test)
-    cm = confusion_matrix(y_test, y_pred)
-    plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
+    gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
 
 
 def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
@@ -100,18 +89,59 @@ def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
     kernels = ['linear', 'poly2', 'poly3', 'poly4', 'poly5', 'poly6', 'poly7', 'poly8', 'rbf', 'sigmoid']
     f1_train, f1_test = tune_svm(X_train, y_train, X_test, y_test, kernels)
     plot_tune_curve(f1_train, f1_test, kernels, algor_name=algor_name, xlabel='Kernel Function', dataset_name=dataset_name)
+
     clf = svm_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
+
+    gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
+
+def run_boosted_tree_experiment(X_train, y_train, X_test, y_test, dataset_name):
+    algor_name = 'Boosting'
+    estimator_sizes = np.linspace(1, 250, 40).astype('int')
+    f1_train, f1_test = tune_boosted_tree(X_train, y_train, X_test, y_test, estimator_sizes)
+    plot_tune_curve(f1_train, f1_test, estimator_sizes, xlabel='# of Estimators', algor_name=algor_name, dataset_name=dataset_name)
+    clf = boosted_tree_GridSearchCV(X_train, y_train)
+    estimator = clf.best_estimator_
+    gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
+
+
+def run_nn_experiment(X_train, y_train, X_test, y_test, dataset_name):
+    algor_name = 'Neural Network'
+    hidden_layer_sizes = np.linspace(1, 150, 30).astype('int')
+    f1_train, f1_test = tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes)
+    plot_tune_curve(f1_train, f1_test, hidden_layer_sizes, xlabel='# of Hidden Layers', algor_name=algor_name,
+                    dataset_name=dataset_name)
+    clf = nn_GridSearchCV(X_train, y_train)
+    estimator = clf.best_estimator_
+    gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
+
+
+def run_knn_experiment(X_train, y_train, X_test, y_test, dataset_name):
+    algor_name = 'kNN'
+    neighbors_list = np.linspace(1, 50, 50).astype('int')
+    f1_train, f1_test = tune_knn(X_train, y_train, X_test, y_test, neighbors_list)
+    plot_tune_curve(f1_train, f1_test, neighbors_list, xlabel='# of Neighbors', algor_name=algor_name,
+                    dataset_name=dataset_name)
+    clf = knn_GridSearchCV(X_train, y_train)
+    estimator = clf.best_estimator_
+    gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
+
+
+def gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=None, dataset_name=None):
     train_sizes = (np.linspace(.05, 1.0, 20) * y_train.shape[0]).astype('int')
+
     train_mean, train_std, test_mean, test_std, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std = \
-        run_cross_validation(clf, X_train, y_train, train_sizes, algor_name=algor_name, dataset_name=dataset_name)
+        run_cross_validation(estimator, X_train, y_train, train_sizes, algor_name=algor_name, dataset_name=dataset_name)
+
+    y_pred = classifier_eval(estimator, X_train, y_train, X_test, y_test)
+    cm = confusion_matrix(y_test, y_pred)
+
     plot_learning_curve(train_sizes, train_mean, train_std, test_mean, test_std,
                         algor_name=algor_name, dataset_name=dataset_name)
     plot_learning_prediction_times(train_sizes, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std,
                                    algor_name=algor_name, dataset_name=dataset_name)
-    y_pred = classifier_eval(estimator, X_train, y_train, X_test, y_test)
-    cm = confusion_matrix(y_test, y_pred)
     plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
+
 
 def run_experiments():
     X1, y1, X2, y2 = get_data()

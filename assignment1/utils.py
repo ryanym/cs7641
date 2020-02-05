@@ -7,6 +7,7 @@ import itertools
 plt.style.use('seaborn-whitegrid')
 
 
+
 def plot_tune_curve(f1_train, f1_test, xvals, algor_name=None, xlabel=None, dataset_name=None):
     plt.plot(xvals, f1_test, 'o-', color='g', label='Test F1 Score')
     plt.plot(xvals, f1_train, 'o-', color='b', label='Train F1 Score')
@@ -20,8 +21,6 @@ def plot_tune_curve(f1_train, f1_test, xvals, algor_name=None, xlabel=None, data
     plt.tight_layout()
     # plt.savefig('figures/' + 'f1_score_' + '_'.join(dataset_name.split()) + '.png')
     plt.savefig('figures/' + '_'.join(algor_name.split()) + '_f1_score_' + '_'.join(dataset_name.split()) + '.png')
-
-
 
 
 
