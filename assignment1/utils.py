@@ -6,22 +6,23 @@ import itertools
 
 plt.style.use('seaborn-whitegrid')
 
-def plot_tune_curve(f1_train, f1_test, xvals, title=None, xlabel=None):
+
+def plot_tune_curve(f1_train, f1_test, xvals, title=None, xlabel=None, dataset_name=None):
     plt.plot(xvals, f1_test, 'o-', color='g', label='Test F1 Score')
     plt.plot(xvals, f1_train, 'o-', color='b', label='Train F1 Score')
 
     plt.ylabel('Model F1 Score')
     # plt.xlabel('No. Neighbors')
     plt.xlabel(xlabel)
-    plt.title(title)
+    plt.title(dataset_name + ' F1 Score: ' + title)
 
     plt.legend(loc='best')
     plt.tight_layout()
-    plt.show()
+    plt.savefig('figures/' + '_'.join(dataset_name.split()) + 'f1_score_' + '_'.join(title.split()) + '.png')
 
 
 
-def plot_learning_curve(clf, X, y, title="Insert Title"): # TODO refactor this out to experiment
+def plot_learning_curve1(clf, X, y, title="Insert Title"): # TODO refactor this out to experiment
     n = len(y)
     train_mean = [];
     train_std = []  # model performance score (f1)
@@ -63,7 +64,7 @@ def plot_learning_curve(clf, X, y, title="Insert Title"): # TODO refactor this o
     return train_sizes, train_mean, fit_mean, pred_mean
 
 
-def plot_LC(train_sizes, train_mean, train_std, cv_mean, cv_std, title):
+def plot_learning_curve(train_sizes, train_mean, train_std, cv_mean, cv_std, title):
     plt.figure()
     plt.title("Learning Curve: " + title)
     plt.xlabel("Training Examples")

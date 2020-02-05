@@ -71,6 +71,8 @@ def decisition_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     #parameters to search:
     #20 values of min_samples leaf from 0.5% sample to 5% of the training data
     #20 values of max_depth from 1, 20
+    start_leaf_n = round(0.005 * len(X_train))
+    end_leaf_n = round(0.05 * len(X_train))
     param_grid = {'min_samples_leaf': np.linspace(start_leaf_n, end_leaf_n, 20).round().astype('int'),
                   'max_depth': np.arange(1, 20)}
 
@@ -79,7 +81,7 @@ def decisition_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
     print("Per Hyperparameter tuning, best parameters are:")
     print(dt.best_params_)
     # return tree.best_params_['max_depth'], tree.best_params_['min_samples_leaf']
-    return dt.best_params_
+    return dt
 
 def tune_boosted_tree(X_train, y_train, X_test, y_test, max_depth, min_samples_leaf, title, estimator_list):
     f1_test = []
