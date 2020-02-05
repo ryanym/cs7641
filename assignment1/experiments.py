@@ -4,12 +4,13 @@ from sklearn.model_selection import cross_validate, train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
 from algorithms import *
 from utils import *
+from preprocessing import *
 
 
-
-def run_cross_validation(clf, X, y, train_sizes):
+def run_cross_validation(clf, X, y, train_sizes, algor_name=None, dataset_name=None):
     cv_scores = []
-    for size in train_sizes:
+    for i, size in enumerate(train_sizes):
+        print("cross validation: {0}/{1} ".format(i, len(train_sizes)))
         idx = np.random.randint(X.shape[0], size=size)
         X_sub = X.iloc[idx, :]
         y_sub = y.iloc[idx, :]
@@ -35,7 +36,9 @@ def run_cross_validation(clf, X, y, train_sizes):
         fit_time_std[i] = np.std(score['fit_time'])
         pred_time_mean[i] = np.mean(score['score_time'])
         pred_time_std[i] = np.std(score['score_time'])
-
+    df = pd.DataFrame(list(zip(train_mean, train_std, test_mean, test_std,
+                               fit_time_mean, fit_time_std, pred_time_mean, pred_time_std)))
+    df.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '.csv')
     return train_mean, train_std, test_mean, test_std, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std
 
 
@@ -66,28 +69,36 @@ def classifier_eval(clf, X_train, y_train, X_test, y_test):
     print("AUC:       " + "{:.2f}".format(auc))
     print("Recall:    " + "{:.2f}".format(recall))
 
-    return y_test, y_pred
+    return y_pred
 
 
 def run_decision_tree_exp(X_train, y_train, X_test, y_test, dataset_name):
-
+    algor_name = 'Decision Tree'
     tree_depth = list(range(1, 31))
     f1_train, f1_test = tune_decision_tree(X_train, y_train, X_test, y_test, tree_depth)
-    plot_tune_curve(f1_train, f1_test, tree_depth, title='Decision Tree', xlabel='Max Depth', dataset_name=dataset_name)
+    plot_tune_curve(f1_train, f1_test, tree_depth, algor_name=algor_name, xlabel='Max Depth', dataset_name=dataset_name)
 
     clf = decisition_tree_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
 
-    train_sizes = (np.linspace(.05, 1.0, 20) * len(y)).astype('int')
+    train_sizes = (np.linspace(.05, 1.0, 20) * y_train.shape[0]).astype('int')
     train_mean, train_std, test_mean, test_std, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std = \
-        run_cross_validation(clf, X_train, y_train, train_sizes)
+        run_cross_validation(clf, X_train, y_train, train_sizes, algor_name=algor_name, dataset_name=dataset_name)
 
-    plot_learning_curve(train_sizes, train_mean, train_std, fit_time_mean, fit_time_std, dataset_name)
-    # train_samp_phish, DT_train_score_phish, DT_fit_time_phish, DT_pred_time_phish = plot_learning_curve(estimator_phish,
-    #                                                                                                     X1_train,
-    #                                                                                                     Y1_train,
-    #                                                                                                     title="Decision Tree Phishing Data")
-    final_classifier_evaluation(estimator_phish, X1_train, X1_test, Y1_train, Y1_test)
+    plot_learning_curve(train_sizes, train_mean, train_std, test_mean, test_std,
+                        algor_name=algor_name, dataset_name=dataset_name)
+    plot_learning_prediction_times(train_sizes, fit_time_mean, fit_time_std, pred_time_mean, pred_time_std,
+                                   algor_name=algor_name, dataset_name=dataset_name)
+
+    y_pred = classifier_eval(estimator, X_train, y_train, X_test, y_test)
+    cm = confusion_matrix(y_test, y_pred)
+    plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
 
 def run_experiments():
-    pass
+    X1, y1, X2, y2 = get_data()
+    X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
+    run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+
+
+if __name__ == '__main__':
+    run_experiments()

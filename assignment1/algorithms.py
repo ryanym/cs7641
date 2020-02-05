@@ -31,16 +31,7 @@ def tune_KNN(X_train, y_train, X_test, y_test, neighbors_list):
         f1_train.append(f1_score(y_train, y_pred_train))
 
     return f1_test, f1_train
-    # TODO generalize plot
-    # plt.plot(klist, f1_test, 'o-', color='r', label='Test F1 Score')
-    # plt.plot(klist, f1_train, 'o-', color='b', label='Train F1 Score')
-    # plt.ylabel('Model F1 Score')
-    # plt.xlabel('No. Neighbors')
-    #
-    # plt.title(title)
-    # plt.legend(loc='best')
-    # plt.tight_layout()
-    # plt.show()
+
 
 # TODO get best parameters for KNN
 
@@ -56,7 +47,7 @@ def tune_decision_tree(X_train, y_train, X_test, y_test, depth_list):
         y_pred_train = clf.predict(X_train)
         f1_test.append(f1_score(y_test, y_pred_test))
         f1_train.append(f1_score(y_train, y_pred_train))
-    return f1_test, f1_train
+    return f1_train, f1_test
     # plt.plot(max_depth, f1_test, 'o-', color='r', label='Test F1 Score')
     # plt.plot(max_depth, f1_train, 'o-', color='b', label='Train F1 Score')
     # plt.ylabel('Model F1 Score')
@@ -67,7 +58,7 @@ def tune_decision_tree(X_train, y_train, X_test, y_test, depth_list):
     # plt.tight_layout()
     # plt.show()
 
-def decisition_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
+def decisition_tree_GridSearchCV(X_train, y_train):
     #parameters to search:
     #20 values of min_samples leaf from 0.5% sample to 5% of the training data
     #20 values of max_depth from 1, 20
