@@ -5,6 +5,8 @@ from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_s
 from algorithms import *
 from utils import *
 from preprocessing import *
+from sklearn import preprocessing
+
 
 
 def run_cross_validation(clf, X, y, train_sizes, algor_name=None, dataset_name=None):
@@ -143,14 +145,25 @@ def gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name
     plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
 
 
-def run_experiments():
+def run_experiments1():
     X1, y1, X2, y2 = get_data()
     X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
-    # run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    # run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    # run_nn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    # run_knn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    dataset_phishing_websites = "Phishing Websites"
+    # run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+    # run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+    run_svm_exp(X1_train, y1_train, X1_test, y1_test,dataset_phishing_websites)
+    # run_nn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+    # run_knn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+    X1_train_scaled = preprocessing.scale(X1_train)
+    X1_train_scaled = pd.DataFrame(X1_train_scaled)
+    X1_test_scaled = preprocessing.scale(X1_test)
+    X1_test_scaled = pd.DataFrame(X1_test_scaled)
+
+    run_svm_exp(X1_train_scaled,
+                y1_train,
+                X1_test_scaled,
+                y1_test,
+                dataset_phishing_websites)
 
 def run_experiments2():
     X1, y1, X2, y2 = get_data()
@@ -160,8 +173,22 @@ def run_experiments2():
     # run_boosting_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
     # run_nn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
     # run_knn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
-    run_svm_exp(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
+    X2_train_scaled = preprocessing.scale(X2_train)
+    X2_train_scaled = pd.DataFrame(X2_train_scaled)
+    # y2_train_scaled = preprocessing.scale(y2_train)
+    X2_test_scaled = preprocessing.scale(X2_test)
+    X2_test_scaled = pd.DataFrame(X2_test_scaled)
+
+    # y2_test_scaled = preprocessing.scale(y2_test)
+    # print(y2_train_scaled)
+    # print(y2_train)
+    run_svm_exp(X2_train_scaled,
+                y2_train,
+                X2_test_scaled,
+                y2_test,
+                dataset_online_shoppers)
 
 
 if __name__ == '__main__':
-    run_experiments2()
+    run_experiments1()
+    # run_experiments2()
