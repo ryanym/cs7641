@@ -6,7 +6,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
-
+import warnings
+warnings.filterwarnings('ignore')
 
 
 
@@ -22,7 +23,6 @@ def tune_knn(X_train, y_train, X_test, y_test, neighbors_list):
                   n_jobs=-1,
                   algorithm='auto',
                   p=2,
-                  random_state=0
                   )
         # print(X_train.shape, y_train.shape)
         clf.fit(X_train, y_train)
@@ -40,7 +40,7 @@ def knn_GridSearchCV(X_train, y_train):
     param_grid = {'n_neighbors': neighbors_list,
                   'weights': weights}
 
-    knn = GridSearchCV(estimator=kNN(n_jobs=-1, random_state=0), param_grid=param_grid, cv=10)
+    knn = GridSearchCV(estimator=kNN(n_jobs=-1), param_grid=param_grid, cv=10)
     knn.fit(X_train, y_train)
     print("Per Hyperparameter tuning, best parameters are:")
     print(knn.best_params_)

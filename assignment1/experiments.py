@@ -95,7 +95,7 @@ def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
 
     gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
 
-def run_boosted_tree_experiment(X_train, y_train, X_test, y_test, dataset_name):
+def run_boosting_experiment(X_train, y_train, X_test, y_test, dataset_name):
     algor_name = 'Boosting'
     estimator_sizes = np.linspace(1, 250, 40).astype('int')
     f1_train, f1_test = tune_boosted_tree(X_train, y_train, X_test, y_test, estimator_sizes)
@@ -147,7 +147,11 @@ def run_experiments():
     X1, y1, X2, y2 = get_data()
     X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
     # run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    # run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    # run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    # run_nn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    run_knn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+
 
 
 if __name__ == '__main__':
