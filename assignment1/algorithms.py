@@ -94,7 +94,7 @@ def tune_boosted_tree(X_train, y_train, X_test, y_test,  estimator_list):
     max_depth = 5
     min_samples_leaf = 30
     for i in estimator_list:
-        print('DT: {0}/{1}'.format(i, max(estimator_list)))
+        print('BDT: {0}/{1}'.format(i, max(estimator_list)))
         clf = GradientBoostingClassifier(n_estimators=i, max_depth=int(max_depth / 2),
                                          min_samples_leaf=int(min_samples_leaf / 2), random_state=0, )
         clf.fit(X_train, y_train)
@@ -102,7 +102,7 @@ def tune_boosted_tree(X_train, y_train, X_test, y_test,  estimator_list):
         y_pred_train = clf.predict(X_train)
         f1_test.append(f1_score(y_test, y_pred_test))
         f1_train.append(f1_score(y_train, y_pred_train))
-
+    return f1_train, f1_test
     # plt.plot(n_estimators, f1_test, 'o-', color='r', label='Test F1 Score')
     # plt.plot(n_estimators, f1_train, 'o-', color='b', label='Train F1 Score')
     # plt.ylabel('Model F1 Score')
@@ -112,9 +112,11 @@ def tune_boosted_tree(X_train, y_train, X_test, y_test,  estimator_list):
     # plt.legend(loc='best')
     # plt.tight_layout()
     # plt.show()
-def boosted_tree_GridSearchCV(start_leaf_n, end_leaf_n, X_train, y_train):
+def boosted_tree_GridSearchCV(X_train, y_train):
     #parameters to search:
     #n_estimators, learning_rate, max_depth, min_samples_leaf
+    start_leaf_n = round(0.005 * len(X_train))
+    end_leaf_n = round(0.05 * len(X_train))
     param_grid = {'min_samples_leaf': np.linspace(start_leaf_n,end_leaf_n,3).round().astype('int'),
                   'max_depth': np.arange(1,4),
                   'n_estimators': np.linspace(10,100,3).round().astype('int'),
@@ -167,7 +169,7 @@ def nn_GridSearchCV(X_train, y_train):
     print("Per Hyperparameter tuning, best parameters are:")
     print(nn.best_params_)
     # return nn.best_params_['hidden_layer_sizes'], nn.best_params_['learning_rate_init']
-    return nn.best_params_
+    return nn
 
 
 def tune_svm(X_train, y_train, X_test, y_test, kernel_functions):
@@ -210,14 +212,14 @@ def svm_GridSearchCV(X_train, y_train):
     #parameters to search:
     #penalty parameter, C
     #
-    Cs = [1e-4, 1e-3, 1e-2, 1e01, 1]
-    gammas = [1,10,100]
+    print('in SVM grid search cv')
+    Cs = [1e-2, 1e-1, 1]
     kernels = ['linear', 'poly', 'rbf', 'sigmoid']
-    degrees = [2,3,4,5,6,7,8]
-    param_grid = {'C': Cs, 'gamma': gammas, 'kernel': kernels, 'degree': degrees}
+    degrees = [2, 3, 4]
+    param_grid = {'C': Cs,  'kernel': kernels, 'degree': degrees}
 
     svm = GridSearchCV(estimator=SVC(random_state=0),
-                       param_grid=param_grid, cv=10)
+                       param_grid=param_grid, cv=10, n_jobs=-1)
     svm.fit(X_train, y_train)
     print("Per Hyperparameter tuning, best parameters are:")
     print(svm.best_params_)

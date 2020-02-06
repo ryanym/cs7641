@@ -148,11 +148,20 @@ def run_experiments():
     X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
     # run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
     # run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    # run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    run_svm_exp(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
     # run_nn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
-    run_knn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
+    # run_knn_experiment(X1_train, y1_train, X1_test, y1_test, "Phishing Websites")
 
+def run_experiments2():
+    X1, y1, X2, y2 = get_data()
+    X2_train, X2_test, y2_train, y2_test = train_test_split(X2, y2, test_size=0.2, shuffle=True)
+    dataset_online_shoppers = "Online Shoppers"
+    # run_decision_tree_exp(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
+    # run_boosting_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
+    # run_nn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
+    # run_knn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
+    run_svm_exp(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
 
 
 if __name__ == '__main__':
-    run_experiments()
+    run_experiments2()
