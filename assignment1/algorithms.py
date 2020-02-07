@@ -31,7 +31,7 @@ def tune_knn(X_train, y_train, X_test, y_test, neighbors_list):
         f1_test.append(f1_score(y_test, y_pred_test))
         f1_train.append(f1_score(y_train, y_pred_train))
 
-    return f1_test, f1_train
+    return f1_train, f1_test
 
 
 def knn_GridSearchCV(X_train, y_train):
@@ -80,7 +80,7 @@ def decisition_tree_GridSearchCV(X_train, y_train):
     param_grid = {'min_samples_leaf': np.linspace(start_leaf_n, end_leaf_n, 20).round().astype('int'),
                   'max_depth': np.arange(1, 20)}
 
-    dt = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0), param_grid=param_grid, cv=10)
+    dt = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0), param_grid=param_grid, cv=10, n_jobs=-1)
     dt.fit(X_train, y_train)
     print("Per Hyperparameter tuning, best parameters are:")
     print(dt.best_params_)
@@ -122,7 +122,7 @@ def boosted_tree_GridSearchCV(X_train, y_train):
                   'n_estimators': np.linspace(10,100,3).round().astype('int'),
                   'learning_rate': np.linspace(.001,.1,3)}
 
-    boostedTree = GridSearchCV(estimator = GradientBoostingClassifier(), param_grid=param_grid, cv=10)
+    boostedTree = GridSearchCV(estimator = GradientBoostingClassifier(), param_grid=param_grid, cv=10, n_jobs=-1)
     boostedTree.fit(X_train, y_train)
     print("Per Hyperparameter tuning, best parameters are:")
     print(boostedTree.best_params_)
@@ -143,7 +143,7 @@ def tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes):
         y_pred_train = clf.predict(X_train)
         f1_test.append(f1_score(y_test, y_pred_test))
         f1_train.append(f1_score(y_train, y_pred_train))
-    return f1_test, f1_train
+    return f1_train, f1_test
 
     # plt.plot(hlist, f1_test, 'o-', color='r', label='Test F1 Score')
     # plt.plot(hlist, f1_train, 'o-', color='b', label='Train F1 Score')

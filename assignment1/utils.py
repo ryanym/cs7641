@@ -9,6 +9,7 @@ plt.style.use('seaborn-whitegrid')
 
 
 def plot_tune_curve(f1_train, f1_test, xvals, algor_name=None, xlabel=None, dataset_name=None):
+    plt.figure()
     plt.plot(xvals, f1_test, 'o-', color='g', label='Test F1 Score')
     plt.plot(xvals, f1_train, 'o-', color='b', label='Train F1 Score')
 
