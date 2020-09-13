@@ -1,5 +1,6 @@
 import numpy as np
 import timeit
+import sys
 from sklearn.model_selection import cross_validate, train_test_split
 from sklearn.metrics import roc_auc_score, accuracy_score, f1_score, precision_score, recall_score, confusion_matrix
 from algorithms import *
@@ -79,7 +80,8 @@ def run_decision_tree_exp(X_train, y_train, X_test, y_test, dataset_name):
     tree_depth = list(range(1, 31))
     f1_train, f1_test = tune_decision_tree(X_train, y_train, X_test, y_test, tree_depth)
     plot_tune_curve(f1_train, f1_test, tree_depth, algor_name=algor_name, xlabel='Max Depth', dataset_name=dataset_name)
-
+    df_out = pd.DataFrame(list(zip(tree_depth, f1_train, f1_test)))
+    df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Depth' + '.csv')
     clf = decisition_tree_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
 
@@ -91,7 +93,8 @@ def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
     kernels = ['linear', 'poly2', 'poly3', 'poly4', 'poly5', 'poly6', 'poly7', 'poly8', 'rbf', 'sigmoid']
     f1_train, f1_test = tune_svm(X_train, y_train, X_test, y_test, kernels)
     plot_tune_curve(f1_train, f1_test, kernels, algor_name=algor_name, xlabel='Kernel Function', dataset_name=dataset_name)
-
+    df_out = pd.DataFrame(list(zip(kernels, f1_train, f1_test)))
+    df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Kernels' + '.csv')
     clf = svm_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
 
@@ -102,6 +105,8 @@ def run_boosting_experiment(X_train, y_train, X_test, y_test, dataset_name):
     estimator_sizes = np.linspace(1, 250, 40).astype('int')
     f1_train, f1_test = tune_boosted_tree(X_train, y_train, X_test, y_test, estimator_sizes)
     plot_tune_curve(f1_train, f1_test, estimator_sizes, xlabel='# of Estimators', algor_name=algor_name, dataset_name=dataset_name)
+    df_out = pd.DataFrame(list(zip(estimator_sizes, f1_train, f1_test)))
+    df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Kernels' + '.csv')
     clf = boosted_tree_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
     gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
@@ -113,6 +118,8 @@ def run_nn_experiment(X_train, y_train, X_test, y_test, dataset_name):
     f1_train, f1_test = tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes)
     plot_tune_curve(f1_train, f1_test, hidden_layer_sizes, xlabel='# of Hidden Layers', algor_name=algor_name,
                     dataset_name=dataset_name)
+    df_out = pd.DataFrame(list(zip(hidden_layer_sizes, f1_train, f1_test)))
+    df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Kernels' + '.csv')
     clf = nn_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
     gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name=algor_name, dataset_name=dataset_name)
@@ -145,44 +152,97 @@ def gen_classifier_stats(estimator, X_train, y_train, X_test, y_test, algor_name
     plot_confusion_matrix(cm, classes=['0', '1'], algor_name=algor_name, dataset_name=dataset_name)
 
 
-def run_experiments1():
+def run_experiments1(algor=None):
     X1, y1, X2, y2 = get_data()
     X1_train, X1_test, y1_train, y1_test = train_test_split(X1, y1, test_size=0.2, shuffle=True)
     dataset_phishing_websites = "Phishing Websites"
-    run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
-    run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
-    run_nn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
-    run_knn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
-    X1_train_scaled = preprocessing.scale(X1_train)
-    X1_train_scaled = pd.DataFrame(X1_train_scaled)
-    X1_test_scaled = preprocessing.scale(X1_test)
-    X1_test_scaled = pd.DataFrame(X1_test_scaled)
 
-    run_svm_exp(X1_train_scaled,
-                y1_train,
-                X1_test_scaled,
-                y1_test,
-                dataset_phishing_websites)
+    if not algor:
+        run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        run_nn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        run_knn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        X1_train_scaled = preprocessing.scale(X1_train)
+        X1_train_scaled = pd.DataFrame(X1_train_scaled)
+        X1_test_scaled = preprocessing.scale(X1_test)
+        X1_test_scaled = pd.DataFrame(X1_test_scaled)
 
-def run_experiments2():
+        run_svm_exp(X1_train_scaled,
+                    y1_train,
+                    X1_test_scaled,
+                    y1_test,
+                    dataset_phishing_websites)
+    else:
+        if algor == 'dt':
+            run_decision_tree_exp(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        elif algor == 'boosting':
+            run_boosting_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        elif algor == 'nn':
+            run_nn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        elif algor == 'knn':
+            run_knn_experiment(X1_train, y1_train, X1_test, y1_test, dataset_phishing_websites)
+        elif algor == 'svm':
+            X1_train_scaled = preprocessing.scale(X1_train)
+            X1_train_scaled = pd.DataFrame(X1_train_scaled)
+            X1_test_scaled = preprocessing.scale(X1_test)
+            X1_test_scaled = pd.DataFrame(X1_test_scaled)
+
+            run_svm_exp(X1_train_scaled,
+                        y1_train,
+                        X1_test_scaled,
+                        y1_test,
+                        dataset_phishing_websites)
+        else:
+            raise ValueError(algor + ' does not exist')
+
+def run_experiments2(algor=None):
     X1, y1, X2, y2 = get_data()
     X2_train, X2_test, y2_train, y2_test = train_test_split(X2, y2, test_size=0.2, shuffle=True)
-    dataset_online_shoppers = "Online Shoppers"
-    run_decision_tree_exp(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
-    run_boosting_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
-    run_nn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
-    run_knn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_online_shoppers)
-    X2_train_scaled = preprocessing.scale(X2_train)
-    X2_train_scaled = pd.DataFrame(X2_train_scaled)
-    X2_test_scaled = preprocessing.scale(X2_test)
-    X2_test_scaled = pd.DataFrame(X2_test_scaled)
-    run_svm_exp(X2_train_scaled,
-                y2_train,
-                X2_test_scaled,
-                y2_test,
-                dataset_online_shoppers)
+    print(X2_train.shape)
+    dataset_madelon = "Madelon"
+    if not algor:
+        run_decision_tree_exp(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        run_boosting_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        run_nn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        run_knn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        X2_train_scaled = preprocessing.scale(X2_train)
+        X2_train_scaled = pd.DataFrame(X2_train_scaled)
+        X2_test_scaled = preprocessing.scale(X2_test)
+        X2_test_scaled = pd.DataFrame(X2_test_scaled)
+        run_svm_exp(X2_train_scaled,
+                    y2_train,
+                    X2_test_scaled,
+                    y2_test,
+                    dataset_madelon)
+    else:
+        if algor == 'dt':
+            run_decision_tree_exp(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        elif algor == 'boosting':
+            run_boosting_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        elif algor == 'nn':
+            run_nn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        elif algor == 'knn':
+            run_knn_experiment(X2_train, y2_train, X2_test, y2_test, dataset_madelon)
+        elif algor == 'svm':
+            X2_train_scaled = preprocessing.scale(X2_train)
+            X2_train_scaled = pd.DataFrame(X2_train_scaled)
+            X2_test_scaled = preprocessing.scale(X2_test)
+            X2_test_scaled = pd.DataFrame(X2_test_scaled)
 
+            run_svm_exp(X2_train_scaled,
+                        y2_train,
+                        X2_test_scaled,
+                        y2_test,
+                        dataset_madelon)
+        else:
+            raise ValueError(algor + ' does not exist')
 
 if __name__ == '__main__':
-    run_experiments1()
-    run_experiments2()
+    print(sys.argv)
+    if sys.argv[1] == 'phishing':
+        run_experiments1(sys.argv[2])
+    elif sys.argv[1] == 'madelon':
+        run_experiments2(sys.argv[2])
+    else:
+        print("arg1: phishing, madelon")
+        print("arg2: dt, boosting, nn, knn, svm")

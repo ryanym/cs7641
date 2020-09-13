@@ -25,25 +25,12 @@ def get_data(hist=False):
     X1 = data1.drop(['Result'], axis=1)
     y1 = data1[['Result']]
 
-    data2 = pd.read_csv("data/online_shoppers_intention.csv")
-    data2 = data2.dropna()
+    madelon_train = './data/madelon_train.data'
+    madelon_train_labels = './data/madelon_train.labels'
 
-    columns_to_encode = ['VisitorType', 'Weekend', 'Month', 'Revenue']
-    label_encoder = preprocessing.LabelEncoder()
-    data2_encoded = data2[columns_to_encode]
-    data2_encoded = data2_encoded.apply(label_encoder.fit_transform)
-    data2 = data2.drop(columns_to_encode, axis=1)
-    data2 = pd.concat([data2, data2_encoded], axis=1)
-
-    if hist:
-        data2.drop(['Revenue'], axis=1).hist(figsize=(20,20))
-        plt.tight_layout()
-        plt.savefig('figures/online_shoppers_histogram.png')
-
-    columns_to_onehot = ['Month', 'OperatingSystems', 'Browser', 'Region', 'TrafficType', 'VisitorType', 'Weekend']
-    data2 = pd.get_dummies(data2, columns=columns_to_onehot)
-    X2 = data2.drop(['Revenue'], axis=1)
-    y2 = data2[['Revenue']]
+    X2 = pd.read_csv(madelon_train, delimiter=' ', header=None)
+    X2 = X2.drop([500], axis=1)
+    y2 = pd.read_csv(madelon_train_labels, delimiter=' ', header=None, names=['target'])
 
     return X1, y1, X2, y2
 
