@@ -1,3 +1,6 @@
+### Source code
+github.com/ryanym/cs7641
+
 ### Directory Structure
 ```
 tree
@@ -42,4 +45,3 @@ Some extra experiments was implemented in `preprocess_madelon.ipynb`, run notebo
 - sklearn
 - seaborn
 
-  
