@@ -10,18 +10,18 @@ plt.style.use('seaborn-whitegrid')
 
 def plot_tune_curve(f1_train, f1_test, xvals, algor_name=None, xlabel=None, dataset_name=None):
     plt.figure()
-    plt.plot(xvals, f1_test, 'o-', color='g', label='Test F1 Score')
-    plt.plot(xvals, f1_train, 'o-', color='b', label='Train F1 Score')
+    plt.plot(xvals, f1_test, 'o-', color='g', label='Test Accuracy')
+    plt.plot(xvals, f1_train, 'o-', color='b', label='Train Accuracy')
 
-    plt.ylabel('Model F1 Score')
+    plt.ylabel('Model Accuracy')
     # plt.xlabel('No. Neighbors')
     plt.xlabel(xlabel)
-    plt.title(algor_name + ' F1 Score: ' + dataset_name)
+    plt.title(algor_name + ' Accuracy: ' + dataset_name)
 
     plt.legend(loc='best')
     plt.tight_layout()
     # plt.savefig('figures/' + 'f1_score_' + '_'.join(dataset_name.split()) + '.png')
-    plt.savefig('figures/' + '_'.join(algor_name.split()) + '_f1_score_' + '_'.join(dataset_name.split()) + '.png')
+    plt.savefig('figures/' + '_'.join(algor_name.split()) + '_accuracy_' + '_'.join(dataset_name.split()) + '.png')
 
 
 
@@ -29,7 +29,7 @@ def plot_learning_curve(train_sizes, train_mean, train_std, cv_mean, cv_std, alg
     plt.figure()
     plt.title(algor_name + " Learning Curve: " + dataset_name)
     plt.xlabel("Training Examples")
-    plt.ylabel("Model F1 Score")
+    plt.ylabel("Model Accuracy")
     plt.fill_between(train_sizes, train_mean - 2 * train_std, train_mean + 2 * train_std, alpha=0.1, color="b")
     plt.fill_between(train_sizes, cv_mean - 2 * cv_std, cv_mean + 2 * cv_std, alpha=0.1, color="g")
     plt.plot(train_sizes, train_mean, 'o-', color="b", label="Training Score")

@@ -18,7 +18,7 @@ def run_cross_validation(clf, X, y, train_sizes, algor_name=None, dataset_name=N
         X_sub = X.iloc[idx, :]
         y_sub = y.iloc[idx, :]
 
-        score = cross_validate(clf, X_sub, y_sub, cv=10, scoring='f1', n_jobs=-1, return_train_score=True)
+        score = cross_validate(clf, X_sub, y_sub, cv=10, scoring='accuracy', n_jobs=-1, return_train_score=True)
         cv_scores.append(score)
 
     train_mean = np.zeros(len(train_sizes))
@@ -78,9 +78,10 @@ def classifier_eval(clf, X_train, y_train, X_test, y_test):
 def run_decision_tree_exp(X_train, y_train, X_test, y_test, dataset_name):
     algor_name = 'Decision Tree'
     tree_depth = list(range(1, 31))
-    f1_train, f1_test = tune_decision_tree(X_train, y_train, X_test, y_test, tree_depth)
-    plot_tune_curve(f1_train, f1_test, tree_depth, algor_name=algor_name, xlabel='Max Depth', dataset_name=dataset_name)
-    df_out = pd.DataFrame(list(zip(tree_depth, f1_train, f1_test)))
+    ccp_alphas = np.linspace(0, 0.05, 10).astype('float')
+    f1_train, f1_test = tune_decision_tree(X_train, y_train, X_test, y_test, ccp_alphas)
+    plot_tune_curve(f1_train, f1_test, ccp_alphas, algor_name=algor_name, xlabel='Tree Complexity (0: Complex, 1: Simple)', dataset_name=dataset_name)
+    df_out = pd.DataFrame(list(zip(ccp_alphas, f1_train, f1_test)))
     df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Depth' + '.csv')
     clf = decisition_tree_GridSearchCV(X_train, y_train)
     estimator = clf.best_estimator_
@@ -102,7 +103,7 @@ def run_svm_exp(X_train, y_train, X_test, y_test, dataset_name):
 
 def run_boosting_experiment(X_train, y_train, X_test, y_test, dataset_name):
     algor_name = 'Boosting'
-    estimator_sizes = np.linspace(1, 250, 40).astype('int')
+    estimator_sizes = np.linspace(1, 400, 41).astype('int')
     f1_train, f1_test = tune_boosted_tree(X_train, y_train, X_test, y_test, estimator_sizes)
     plot_tune_curve(f1_train, f1_test, estimator_sizes, xlabel='# of Estimators', algor_name=algor_name, dataset_name=dataset_name)
     df_out = pd.DataFrame(list(zip(estimator_sizes, f1_train, f1_test)))
@@ -114,9 +115,33 @@ def run_boosting_experiment(X_train, y_train, X_test, y_test, dataset_name):
 
 def run_nn_experiment(X_train, y_train, X_test, y_test, dataset_name):
     algor_name = 'Neural Network'
-    hidden_layer_sizes = np.linspace(1, 150, 30).astype('int')
+    # if dataset_name == "Phishing Websites":
+    #
+    # elif dataset_name == "Madelon":
+    #     hidden_layer_sizes = None
+    hidden_layer_sizes = [
+        (5,),
+        (5, 5, 5, 5, 5),
+        (20,),
+        (20, 20, 20, 20, 20),
+        (20, 20, 20, 20, 20, 20, 20, 20, 20, 20),
+        (50,),
+        (50, 50, 50, 50, 50, 50),
+        (50, 50, 50, 50, 50, 50, 50, 50, 50, 50),
+        (100,),
+        (100, 100, 100, 100, 100, 100),
+        (100, 100, 100, 100, 100, 100, 100, 100, 100, 100),
+        (250,),
+        (250, 250, 250, 250, 250, 250),
+        (250, 250, 250, 250, 250, 250, 250, 250, 250, 250),
+        (500,),
+        (500, 500, 500, 500, 500, 500),
+        (500, 500, 500, 500, 500, 500, 500, 500, 500, 500),
+    ]
+    # hidden_layer_sizes = np.linspace(1, 150, 30).astype('int')
     f1_train, f1_test = tune_nn(X_train, y_train, X_test, y_test, hidden_layer_sizes)
-    plot_tune_curve(f1_train, f1_test, hidden_layer_sizes, xlabel='# of Hidden Layers', algor_name=algor_name,
+    hidden_layer_sizes_str = ['c'+str(i+1) for i in range(len(hidden_layer_sizes))]
+    plot_tune_curve(f1_train, f1_test, hidden_layer_sizes_str, xlabel='# of Hidden Layers', algor_name=algor_name,
                     dataset_name=dataset_name)
     df_out = pd.DataFrame(list(zip(hidden_layer_sizes, f1_train, f1_test)))
     df_out.to_csv('output/' + '_'.join(algor_name.split()) + '_' + '_'.join(dataset_name.split()) + '_Kernels' + '.csv')
