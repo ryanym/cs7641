@@ -1,5 +1,5 @@
 ### Source code
-github.com/ryanym/cs7641/assignment2
+https://github.com/ryanym/cs7641/tree/master/assignment2
 
 ### Directory Structure
 ```
